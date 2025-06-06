@@ -1,38 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'blocs/card_bloc.dart';
-import 'blocs/card_event.dart';
-import 'models/card_model.dart';
-import 'screens/home_screen.dart';
-import 'screens/onboarding_screen.dart';
+import '../blocs/card_bloc.dart';
+import '../blocs/card_event.dart';
+import '../screens/home_screen.dart';
+import '../screens/onboarding_screen.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Hive.initFlutter();
-  Hive.registerAdapter(CardFieldAdapter());
-  Hive.registerAdapter(CardModelAdapter());
-  await Hive.openBox<CardModel>('cards');
-
-  final prefs = await SharedPreferences.getInstance();
-  final onboardingSeen = prefs.getBool('onboarding_complete') ?? false;
-
-  runApp(MyApp(showOnboarding: !onboardingSeen));
-}
-
-class MyApp extends StatefulWidget {
+class MyCardApp extends StatefulWidget {
   final bool showOnboarding;
 
-  const MyApp({super.key, required this.showOnboarding});
+  const MyCardApp({super.key, required this.showOnboarding});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<MyCardApp> createState() => _MyCardAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+class _MyCardAppState extends State<MyCardApp> with WidgetsBindingObserver {
   late bool _showOnboarding;
   late final CardBloc _cardBloc;
 
@@ -40,14 +24,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _showOnboarding = widget.showOnboarding;
-    WidgetsBinding.instance.addObserver(this);
     _cardBloc = CardBloc()..add(LoadCards());
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _cardBloc.close();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -70,7 +54,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return BlocProvider.value(
       value: _cardBloc,
       child: MaterialApp(
-        title: 'WalletKit',
+        title: 'Card Manager',
         themeMode: ThemeMode.system,
         theme: ThemeData.light(useMaterial3: true),
         darkTheme: ThemeData.dark(useMaterial3: true),
