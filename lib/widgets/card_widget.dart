@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:walletkit/utils/pdf_exporter.dart';
 import '../models/card_model.dart';
 import '../blocs/card_bloc.dart';
 import '../blocs/card_event.dart';
@@ -136,6 +137,14 @@ class _CardWidgetState extends State<CardWidget> {
                               }
                               : null,
                     ),
+                    IconButton(
+                      icon: const Icon(Icons.share, color: Colors.white),
+                      onPressed:
+                          isAccessible
+                              ? () => exportCardAsPdf(widget.card)
+                              : null,
+                    ),
+
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.white),
                       onPressed:
