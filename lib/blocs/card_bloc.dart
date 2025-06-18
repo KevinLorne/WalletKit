@@ -25,7 +25,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
       if (card != null) {
         final updatedCard = card.copyWith(pinCode: event.newPin);
-        await box.put(event.cardId, updatedCard); // ✅ Update Hive
+        await box.put(event.cardId, updatedCard);
 
         final updatedCards =
             state.cards.map((c) {
@@ -33,7 +33,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
             }).toList();
 
         final updatedUnlockedIds = Set<String>.from(state.unlockedCardIds)
-          ..remove(event.cardId); // ✅ Re-lock the card after changing PIN
+          ..remove(event.cardId);
 
         emit(
           state.copyWith(
@@ -42,6 +42,19 @@ class CardBloc extends Bloc<CardEvent, CardState> {
           ),
         );
       }
+    });
+
+    on<UpdateCard>((event, emit) async {
+      final updatedCard = event.card;
+      final box = Hive.box<CardModel>('cards');
+      await box.put(updatedCard.id, updatedCard);
+
+      final updatedCards =
+          state.cards.map((card) {
+            return card.id == updatedCard.id ? updatedCard : card;
+          }).toList();
+
+      emit(state.copyWith(cards: updatedCards));
     });
 
     on<DeleteCard>((event, emit) async {

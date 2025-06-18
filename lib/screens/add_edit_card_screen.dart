@@ -20,7 +20,28 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
   final _titleController = TextEditingController();
   final _pinController = TextEditingController();
   List<CardField> _fields = [];
+  List<TextEditingController> _controllers = [];
   Color _selectedColor = Colors.blue;
+  String _selectedTemplate = 'Custom';
+
+  final _cardTemplates = {
+    'Custom': <CardField>[],
+    'Child': [
+      CardField(label: 'School', value: '', icon: Icons.school),
+      CardField(label: 'Teacher Name', value: '', icon: Icons.person),
+      CardField(label: 'Doctor', value: '', icon: Icons.medical_services),
+    ],
+    'Elderly': [
+      CardField(label: 'Age', value: '', icon: Icons.cake),
+      CardField(label: 'Insurance', value: '', icon: Icons.health_and_safety),
+      CardField(label: 'Allergies', value: '', icon: Icons.warning),
+    ],
+    'Medical': [
+      CardField(label: 'Blood Type', value: '', icon: Icons.water_drop),
+      CardField(label: 'Allergies', value: '', icon: Icons.warning),
+      CardField(label: 'Primary Doctor', value: '', icon: Icons.local_hospital),
+    ],
+  };
 
   @override
   void initState() {
@@ -33,9 +54,24 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
         _pinController.text = widget.existingCard!.pinCode!;
       }
     }
+    _buildControllers();
+  }
+
+  void _buildControllers() {
+    _controllers =
+        _fields.map((f) => TextEditingController(text: f.value)).toList();
   }
 
   void _saveCard() {
+    // Sync controllers to field values
+    for (int i = 0; i < _fields.length; i++) {
+      _fields[i] = CardField(
+        label: _fields[i].label,
+        icon: _fields[i].icon,
+        value: _controllers[i].text,
+      );
+    }
+
     final newCard = CardModel(
       id: widget.existingCard?.id ?? const Uuid().v4(),
       title: _titleController.text.trim(),
@@ -64,7 +100,10 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
       builder: (context) => const CardFieldEditor(),
     );
     if (newField != null) {
-      setState(() => _fields.add(newField));
+      setState(() {
+        _fields.add(newField);
+        _controllers.add(TextEditingController(text: newField.value));
+      });
     }
   }
 
@@ -72,6 +111,9 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
   void dispose() {
     _titleController.dispose();
     _pinController.dispose();
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -118,17 +160,52 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
                 }).toList(),
           ),
           const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            value: _selectedTemplate,
+            decoration: const InputDecoration(labelText: 'Card Type'),
+            items:
+                _cardTemplates.keys.map((template) {
+                  return DropdownMenuItem(
+                    value: template,
+                    child: Text(template),
+                  );
+                }).toList(),
+            onChanged: (selected) {
+              if (selected != null && selected != _selectedTemplate) {
+                setState(() {
+                  _selectedTemplate = selected;
+                  _fields = List.from(_cardTemplates[selected]!);
+                  _buildControllers();
+                });
+              }
+            },
+          ),
+          const SizedBox(height: 12),
           Text('Fields', style: theme.textTheme.titleMedium),
-          ..._fields.map(
-            (field) => ListTile(
+          ..._fields.asMap().entries.map((entry) {
+            final index = entry.key;
+            final field = entry.value;
+            final controller = _controllers[index];
+
+            return ListTile(
+              leading: field.icon != null ? Icon(field.icon) : null,
               title: Text(field.label),
-              subtitle: Text(field.value),
+              subtitle: TextField(
+                controller: controller,
+                decoration: const InputDecoration(hintText: 'Enter value'),
+              ),
               trailing: IconButton(
                 icon: const Icon(Icons.delete),
-                onPressed: () => setState(() => _fields.remove(field)),
+                onPressed: () {
+                  setState(() {
+                    _fields.removeAt(index);
+                    _controllers[index].dispose();
+                    _controllers.removeAt(index);
+                  });
+                },
               ),
-            ),
-          ),
+            );
+          }),
           const SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: _addField,

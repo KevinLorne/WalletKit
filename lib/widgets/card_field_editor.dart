@@ -20,15 +20,17 @@ class _CardFieldEditorState extends State<CardFieldEditor> {
     {'icon': Icons.email, 'label': 'Email'},
     {'icon': Icons.cake, 'label': 'Birthday'},
     {'icon': Icons.home, 'label': 'Address'},
-    {'icon': null, 'label': 'Other'},
-    {'icon': Icons.credit_card, 'label': 'Card'},
+    {'icon': Icons.favorite, 'label': 'Favorite'},
     {'icon': Icons.shopping_bag, 'label': 'Shopping'},
     {'icon': Icons.directions_car, 'label': 'Car'},
-    {'icon': Icons.score, 'label': 'T-Shirt'},
+    {'icon': Icons.wine_bar, 'label': 'Drink'},
     {'icon': Icons.lock, 'label': 'Password'},
     {'icon': Icons.language, 'label': 'Website'},
     {'icon': Icons.note, 'label': 'Note'},
-    {'icon': Icons.favorite, 'label': 'Emergency'},
+    {'icon': Icons.emergency, 'label': 'Emergency'},
+    {'icon': Icons.face, 'label': 'Kid'},
+    {'icon': Icons.work, 'label': 'Work'},
+    {'icon': null, 'label': 'Other'},
   ];
 
   void _selectQuickIcon(Map<String, dynamic> item) {
