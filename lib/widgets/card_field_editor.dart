@@ -35,7 +35,6 @@ class _CardFieldEditorState extends State<CardFieldEditor> {
 
   void _selectQuickIcon(Map<String, dynamic> item) {
     if (item['icon'] == null) {
-      // "Other"
       setState(() => _showMoreIcons = true);
     } else {
       setState(() {
@@ -110,6 +109,15 @@ class _CardFieldEditorState extends State<CardFieldEditor> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Quick Icons:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 8),
+              _buildIconGrid(_quickIcons, false),
               TextField(
                 controller: _labelController,
                 decoration: const InputDecoration(
@@ -126,15 +134,6 @@ class _CardFieldEditorState extends State<CardFieldEditor> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Quick Icons:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 8),
-              _buildIconGrid(_quickIcons, false),
             ],
           ),
         ),

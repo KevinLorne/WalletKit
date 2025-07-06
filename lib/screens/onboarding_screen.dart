@@ -24,7 +24,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'icon': Icons.dynamic_form,
       'title': 'Add Any Info You Need',
       'description':
-          'Each card can contain flexible, dynamic fields — like Name, DOB, School, Blood Type, and more.',
+          'Each card can contain flexible, dynamic fields — like Name, DOB, School, Emergency Contact, and more.',
     },
     {
       'icon': Icons.color_lens,

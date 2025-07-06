@@ -23,7 +23,6 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
   List<TextEditingController> _controllers = [];
   Color _selectedColor = Colors.blue;
   String _selectedTemplate = 'Custom';
-
   final _cardTemplates = {
     'Custom': <CardField>[],
     'Child': [
@@ -40,6 +39,24 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
       CardField(label: 'Blood Type', value: '', icon: Icons.water_drop),
       CardField(label: 'Allergies', value: '', icon: Icons.warning),
       CardField(label: 'Primary Doctor', value: '', icon: Icons.local_hospital),
+    ],
+    'Adult': [
+      CardField(label: 'Employer', value: '', icon: Icons.business),
+      CardField(
+        label: 'Emergency Contact',
+        value: '',
+        icon: Icons.contact_phone,
+      ),
+      CardField(
+        label: 'Insurance Provider',
+        value: '',
+        icon: Icons.health_and_safety,
+      ),
+    ],
+    'Pet': [
+      CardField(label: 'Breed', value: '', icon: Icons.pets),
+      CardField(label: 'Vet Name', value: '', icon: Icons.local_hospital),
+      CardField(label: 'Allergies', value: '', icon: Icons.warning),
     ],
   };
 
@@ -63,7 +80,6 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
   }
 
   void _saveCard() {
-    // Sync controllers to field values
     for (int i = 0; i < _fields.length; i++) {
       _fields[i] = CardField(
         label: _fields[i].label,
@@ -92,6 +108,9 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
     }
 
     Navigator.pop(context);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Card saved successfully')));
   }
 
   void _addField() async {
@@ -105,6 +124,31 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
         _controllers.add(TextEditingController(text: newField.value));
       });
     }
+  }
+
+  Future<bool> _onWillPop() async {
+    final shouldLeave = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Discard Changes?'),
+            content: const Text(
+              'Are you sure you want to leave without saving your card?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Leave'),
+              ),
+            ],
+          ),
+    );
+
+    return shouldLeave ?? false;
   }
 
   @override
@@ -121,98 +165,107 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.existingCard == null ? 'Add Card' : 'Edit Card'),
-        actions: [
-          IconButton(icon: const Icon(Icons.save), onPressed: _saveCard),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(labelText: 'Card Title'),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _pinController,
-            decoration: const InputDecoration(
-              labelText: 'PIN (optional)',
-              hintText: 'Enter a PIN to lock this card',
-            ),
-            obscureText: true,
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            children:
-                Colors.primaries.take(6).map((color) {
-                  return ChoiceChip(
-                    label: const Text(''),
-                    selected: _selectedColor == color,
-                    selectedColor: color,
-                    backgroundColor: color.withOpacity(0.4),
-                    onSelected: (_) => setState(() => _selectedColor = color),
-                  );
-                }).toList(),
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            value: _selectedTemplate,
-            decoration: const InputDecoration(labelText: 'Card Type'),
-            items:
-                _cardTemplates.keys.map((template) {
-                  return DropdownMenuItem(
-                    value: template,
-                    child: Text(template),
-                  );
-                }).toList(),
-            onChanged: (selected) {
-              if (selected != null && selected != _selectedTemplate) {
-                setState(() {
-                  _selectedTemplate = selected;
-                  _fields = List.from(_cardTemplates[selected]!);
-                  _buildControllers();
-                });
-              }
-            },
-          ),
-          const SizedBox(height: 12),
-          Text('Fields', style: theme.textTheme.titleMedium),
-          ..._fields.asMap().entries.map((entry) {
-            final index = entry.key;
-            final field = entry.value;
-            final controller = _controllers[index];
+    return WillPopScope(
+      onWillPop: _onWillPop,
 
-            return ListTile(
-              leading: field.icon != null ? Icon(field.icon) : null,
-              title: Text(field.label),
-              subtitle: TextField(
-                controller: controller,
-                decoration: const InputDecoration(hintText: 'Enter value'),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.existingCard == null ? 'Add Card' : 'Edit Card'),
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(labelText: 'Card Title'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _pinController,
+              decoration: const InputDecoration(
+                labelText: 'PIN (optional)',
+                hintText: 'Enter a PIN to lock this card',
               ),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () {
+              obscureText: true,
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              children:
+                  Colors.primaries.take(6).map((color) {
+                    return ChoiceChip(
+                      label: const Text(''),
+                      selected: _selectedColor == color,
+                      selectedColor: color,
+                      backgroundColor: color.withOpacity(0.4),
+                      onSelected: (_) => setState(() => _selectedColor = color),
+                    );
+                  }).toList(),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedTemplate,
+              decoration: const InputDecoration(labelText: 'Card Type'),
+              items:
+                  _cardTemplates.keys.map((template) {
+                    return DropdownMenuItem(
+                      value: template,
+                      child: Text(template),
+                    );
+                  }).toList(),
+              onChanged: (selected) {
+                if (selected != null && selected != _selectedTemplate) {
                   setState(() {
-                    _fields.removeAt(index);
-                    _controllers[index].dispose();
-                    _controllers.removeAt(index);
+                    _selectedTemplate = selected;
+                    _fields = List.from(_cardTemplates[selected]!);
+                    _buildControllers();
                   });
-                },
-              ),
-            );
-          }),
-          const SizedBox(height: 8),
-          ElevatedButton.icon(
-            onPressed: _addField,
-            icon: const Icon(Icons.add),
-            label: const Text('Add Field'),
+                }
+              },
+            ),
+            const SizedBox(height: 12),
+            Text('Fields', style: theme.textTheme.titleMedium),
+            ..._fields.asMap().entries.map((entry) {
+              final index = entry.key;
+              final field = entry.value;
+              final controller = _controllers[index];
+
+              return ListTile(
+                leading: field.icon != null ? Icon(field.icon) : null,
+                title: Text(field.label),
+                subtitle: TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(hintText: 'Enter value'),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    setState(() {
+                      _fields.removeAt(index);
+                      _controllers[index].dispose();
+                      _controllers.removeAt(index);
+                    });
+                  },
+                ),
+              );
+            }),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: _addField,
+              icon: const Icon(Icons.add),
+              label: const Text('Add More'),
+            ),
+          ],
+        ),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(20),
+          child: ElevatedButton.icon(
+            onPressed: _saveCard,
+            icon: const Icon(Icons.save),
+            label: const Text('Save Card'),
           ),
-        ],
+        ),
       ),
     );
   }

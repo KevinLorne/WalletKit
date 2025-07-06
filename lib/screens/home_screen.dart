@@ -31,20 +31,6 @@ class HomeScreen extends StatelessWidget {
             );
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Edit Card PIN',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const SelectCardForPinEditScreen(),
-                ),
-              );
-            },
-          ),
-        ],
       ),
 
       body: BlocBuilder<CardBloc, CardState>(
