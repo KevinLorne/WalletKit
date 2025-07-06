@@ -138,9 +138,16 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.teal),
+                ),
               ),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.white,
+                ),
                 onPressed: () => Navigator.pop(context, true),
                 child: const Text('Leave'),
               ),
@@ -253,14 +260,30 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
             const SizedBox(height: 8),
             ElevatedButton.icon(
               onPressed: _addField,
-              icon: const Icon(Icons.add),
-              label: const Text('Add More'),
+              icon: const Icon(Icons.add, color: Colors.teal),
+              label: const Text(
+                'Add More',
+                style: TextStyle(color: Colors.teal),
+              ),
             ),
           ],
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(20),
           child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             onPressed: _saveCard,
             icon: const Icon(Icons.save),
             label: const Text('Save Card'),

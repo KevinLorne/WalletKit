@@ -21,15 +21,8 @@ class _CardFieldEditorState extends State<CardFieldEditor> {
     {'icon': Icons.cake, 'label': 'Birthday'},
     {'icon': Icons.home, 'label': 'Address'},
     {'icon': Icons.favorite, 'label': 'Favorite'},
-    {'icon': Icons.shopping_bag, 'label': 'Shopping'},
     {'icon': Icons.directions_car, 'label': 'Car'},
-    {'icon': Icons.wine_bar, 'label': 'Drink'},
-    {'icon': Icons.lock, 'label': 'Password'},
-    {'icon': Icons.language, 'label': 'Website'},
-    {'icon': Icons.note, 'label': 'Note'},
     {'icon': Icons.emergency, 'label': 'Emergency'},
-    {'icon': Icons.face, 'label': 'Kid'},
-    {'icon': Icons.work, 'label': 'Work'},
     {'icon': null, 'label': 'Other'},
   ];
 
@@ -141,9 +134,13 @@ class _CardFieldEditorState extends State<CardFieldEditor> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: const Text('Cancel', style: TextStyle(color: Colors.teal)),
         ),
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+          ),
           onPressed: () {
             final label = _labelController.text.trim();
             final value = _valueController.text.trim();

@@ -59,7 +59,16 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
     on<DeleteCard>((event, emit) async {
       final updated = state.cards.where((c) => c.id != event.cardId).toList();
-      await Hive.box<CardModel>('cards').delete(event.cardId);
+      final box = Hive.box<CardModel>('cards');
+
+      final keyToDelete = box.keys.firstWhere(
+        (key) => box.get(key)?.id == event.cardId,
+        orElse: () => null,
+      );
+
+      if (keyToDelete != null) {
+        await box.delete(keyToDelete);
+      }
       final updatedUnlocks = Set<String>.from(state.unlockedCardIds)
         ..remove(event.cardId);
       emit(state.copyWith(cards: updated, unlockedCardIds: updatedUnlocks));

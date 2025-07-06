@@ -17,20 +17,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       'icon': Icons.credit_card,
       'title': 'Welcome to WalletKit',
-      'description':
-          'Create and manage custom cards with personal details like name, age, or any info you choose.',
-    },
-    {
-      'icon': Icons.dynamic_form,
-      'title': 'Add Any Info You Need',
-      'description':
-          'Each card can contain flexible, dynamic fields — like Name, DOB, School, Emergency Contact, and more.',
+      'description': 'Create cards with info like name, school, and contacts.',
     },
     {
       'icon': Icons.color_lens,
-      'title': 'Style It Your Way',
-      'description':
-          'Pick a color, expand sections, and organize your cards visually.',
+      'title': 'Make It Yours',
+      'description': 'Pick colors, set a PIN, and organize your info your way.',
     },
   ];
 
@@ -66,19 +58,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     padding: const EdgeInsets.all(32),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
                       children: [
                         Icon(page['icon'], size: 100),
                         const SizedBox(height: 32),
                         Text(
                           page['title'],
                           style: theme.textTheme.headlineMedium,
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.left,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           page['description'],
                           style: theme.textTheme.bodyLarge,
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.left,
                         ),
                       ],
                     ),
@@ -110,6 +104,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   ElevatedButton(
                     onPressed: _nextPage,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                      foregroundColor: Colors.white,
+                    ),
                     child: Text(
                       _currentIndex == _pages.length - 1
                           ? 'Get Started'

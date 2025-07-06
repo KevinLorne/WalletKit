@@ -37,10 +37,14 @@ class _CardWidgetState extends State<CardWidget> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(color: Colors.teal)),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, controller.text.trim()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+              ),
               child: const Text('Unlock'),
             ),
           ],
@@ -146,7 +150,10 @@ class _CardWidgetState extends State<CardWidget> {
                     ),
 
                     IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.white),
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Color.fromRGBO(255, 147, 147, 1),
+                      ),
                       onPressed:
                           isAccessible
                               ? () {
