@@ -12,7 +12,6 @@ class _CardFieldEditorState extends State<CardFieldEditor> {
   final TextEditingController _labelController = TextEditingController();
   final TextEditingController _valueController = TextEditingController();
   IconData? _selectedIcon;
-  bool _showMoreIcons = false;
 
   final _quickIcons = <Map<String, dynamic>>[
     {'icon': Icons.person, 'label': 'Name'},
@@ -28,12 +27,10 @@ class _CardFieldEditorState extends State<CardFieldEditor> {
 
   void _selectQuickIcon(Map<String, dynamic> item) {
     if (item['icon'] == null) {
-      setState(() => _showMoreIcons = true);
     } else {
       setState(() {
         _selectedIcon = item['icon'];
         _labelController.text = item['label'];
-        _showMoreIcons = false;
       });
     }
   }
@@ -76,11 +73,13 @@ class _CardFieldEditorState extends State<CardFieldEditor> {
                                 : Colors.grey,
                       ),
                     ),
+
                     child:
                         icon != null
                             ? Icon(icon, size: 28)
                             : const Icon(Icons.more_horiz, size: 28),
                   ),
+
                   const SizedBox(height: 4),
                   Text(item['label'], style: const TextStyle(fontSize: 12)),
                 ],

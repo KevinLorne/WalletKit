@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:walletkit/blocs/card_event.dart';
 import 'package:walletkit/widgets/card_field_editor.dart';
@@ -23,6 +24,7 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
   List<TextEditingController> _controllers = [];
   Color _selectedColor = Colors.blue;
   String _selectedTemplate = 'Custom';
+
   final _cardTemplates = {
     'Custom': <CardField>[],
     'Child': [
@@ -154,7 +156,6 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
             ],
           ),
     );
-
     return shouldLeave ?? false;
   }
 
@@ -174,7 +175,6 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
 
     return WillPopScope(
       onWillPop: _onWillPop,
-
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.existingCard == null ? 'Add Card' : 'Edit Card'),
@@ -199,16 +199,63 @@ class _AddEditCardScreenState extends State<AddEditCardScreen> {
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
-              children:
-                  Colors.primaries.take(6).map((color) {
-                    return ChoiceChip(
-                      label: const Text(''),
-                      selected: _selectedColor == color,
-                      selectedColor: color,
-                      backgroundColor: color.withOpacity(0.4),
-                      onSelected: (_) => setState(() => _selectedColor = color),
+              children: [
+                ...Colors.primaries.take(5).map((color) {
+                  return ChoiceChip(
+                    label: const Text(''),
+                    selected: _selectedColor == color,
+                    selectedColor: color,
+                    backgroundColor: color.withOpacity(0.4),
+                    onSelected: (_) {
+                      setState(() {
+                        _selectedColor = color;
+                      });
+                    },
+                  );
+                }),
+                ChoiceChip(
+                  label: const Icon(Icons.color_lens),
+                  selected: !Colors.primaries.take(6).contains(_selectedColor),
+                  onSelected: (_) async {
+                    Color tempColor = _selectedColor;
+                    final pickedColor = await showDialog<Color>(
+                      context: context,
+                      builder:
+                          (_) => AlertDialog(
+                            title: const Text('Pick a Color'),
+                            content: SingleChildScrollView(
+                              child: ColorPicker(
+                                pickerColor: tempColor,
+                                onColorChanged: (color) {
+                                  tempColor = color;
+                                },
+                                enableAlpha: false,
+                                displayThumbColor: true,
+                                labelTypes: const [],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed:
+                                    () => Navigator.pop(context, tempColor),
+                                child: const Text('Select'),
+                              ),
+                            ],
+                          ),
                     );
-                  }).toList(),
+
+                    if (pickedColor != null) {
+                      setState(() {
+                        _selectedColor = pickedColor;
+                      });
+                    }
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
